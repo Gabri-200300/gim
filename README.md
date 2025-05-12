@@ -12,4 +12,4 @@ Corso di Grafica in Movimento 2025 SUPSI
 - [Esercizio 1A: movimento 3](https://gabri-200300.github.io/gim/Esercizio_1A/movimento_3.html)
 
 # Esercizio 1B
-- [Esercizio 1B: logo animato](https://gabri-200300.github.io/gim/Esercizio_1A/index.html)
+- [Esercizio 1B: logo animato](https://gabri-200300.github.io/gim/Esercizio_1B/index.html)
