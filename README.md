@@ -16,3 +16,7 @@ Corso di Grafica in Movimento 2025 SUPSI
 
 # Esercizio 1C
 - [Esercizio 1C: testo](https://gabri-200300.github.io/gim/Esercizio_1C/esercizio_1C.md)
+
+# Esercizio 2
+- [Esercizio 2: parallasse animato](https://gabri-200300.github.io/gim/Esercizio_2/template/index_animato.html)
+- [Esercizio 2: parallasse interattivo](https://gabri-200300.github.io/gim/Esercizio_2/template/index_interattivo.html)
