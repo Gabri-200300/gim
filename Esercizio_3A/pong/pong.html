@@ -1,0 +1,216 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Pong</title>
+    <style>
+        body { 
+            margin: 0; 
+            overflow: hidden;
+            background-color: #121212;
+            display: flex; 
+            justify-content: center; 
+            align-items: center; 
+            height: 100vh;
+            font-family: 'Space Mono', monospace;
+        }
+        #gameCanvas {
+            box-shadow: 
+                0 0 20px rgba(0, 255, 255, 0.5), 
+                0 0 40px rgba(0, 255, 255, 0.3);
+            border-radius: 15px;
+            background: 
+                linear-gradient(45deg, rgba(20,20,40,0.9), rgba(30,30,60,0.9)),
+                repeating-linear-gradient(
+                    0deg,
+                    rgba(255,255,255,0.03) 0px,
+                    rgba(255,255,255,0.03) 1px,
+                    transparent 1px,
+                    transparent 4px
+                ),
+                repeating-linear-gradient(
+                    90deg,
+                    rgba(255,255,255,0.03) 0px,
+                    rgba(255,255,255,0.03) 1px,
+                    transparent 1px,
+                    transparent 4px
+                );
+        }
+        #scoreOverlay {
+            position: absolute;
+            top: 20px;
+            color: cyan;
+            font-size: 24px;
+            text-shadow: 0 0 10px rgba(0,255,255,0.7);
+            font-family: 'Space Mono', monospace;
+        }
+    </style>
+</head>
+<body>
+    <div id="scoreOverlay">0 : 0</div>
+    <canvas id="gameCanvas" width="800" height="500"></canvas>
+
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreOverlay = document.getElementById('scoreOverlay');
+
+        // Stato del gioco
+        const game = {
+            ball: {
+                x: canvas.width / 2,
+                y: canvas.height / 2,
+                radius: 12,
+                speedX: 6,
+                speedY: 6,
+                color: 'cyan'
+            },
+            players: [
+                { 
+                    x: 20, 
+                    y: canvas.height / 2 - 60, 
+                    width: 15, 
+                    height: 120, 
+                    score: 0,
+                    color: 'cyan'
+                },
+                { 
+                    x: canvas.width - 35, 
+                    y: canvas.height / 2 - 60, 
+                    width: 15, 
+                    height: 120, 
+                    score: 0,
+                    color: 'magenta'
+                }
+            ]
+        };
+
+        // Effetto particellare
+        const particles = [];
+
+        function createParticles(x, y) {
+            const particleCount = 20;
+            for (let i = 0; i < particleCount; i++) {
+                particles.push({
+                    x: x,
+                    y: y,
+                    radius: Math.random() * 5,
+                    color: `hsl(${Math.random() * 360}, 50%, 50%)`,
+                    speedX: (Math.random() - 0.5) * 5,
+                    speedY: (Math.random() - 0.5) * 5,
+                    alpha: 1
+                });
+            }
+        }
+
+        function drawParticles() {
+            particles.forEach((particle, index) => {
+                ctx.beginPath();
+                ctx.arc(particle.x, particle.y, particle.radius, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(${particle.color}, ${particle.alpha})`;
+                ctx.fill();
+                
+                particle.x += particle.speedX;
+                particle.y += particle.speedY;
+                particle.alpha -= 0.05;
+                
+                if (particle.alpha <= 0) {
+                    particles.splice(index, 1);
+                }
+            });
+        }
+
+        function drawBall() {
+            ctx.beginPath();
+            ctx.shadowBlur = 20;
+            ctx.shadowColor = game.ball.color;
+            ctx.arc(game.ball.x, game.ball.y, game.ball.radius, 0, Math.PI * 2);
+            ctx.fillStyle = game.ball.color;
+            ctx.fill();
+            ctx.shadowBlur = 0;
+        }
+
+        function drawPaddles() {
+            game.players.forEach(player => {
+                ctx.fillStyle = player.color;
+                ctx.shadowBlur = 15;
+                ctx.shadowColor = player.color;
+                ctx.fillRect(player.x, player.y, player.width, player.height);
+                ctx.shadowBlur = 0;
+            });
+        }
+
+        function moveBall() {
+            game.ball.x += game.ball.speedX;
+            game.ball.y += game.ball.speedY;
+
+            // Rimbalzo verticale
+            if (game.ball.y - game.ball.radius < 0 || 
+                game.ball.y + game.ball.radius > canvas.height) {
+                game.ball.speedY *= -1;
+                createParticles(game.ball.x, game.ball.y);
+            }
+
+            // Collisione con i paddle
+            game.players.forEach((player, index) => {
+                if (
+                    game.ball.x - game.ball.radius < player.x + player.width &&
+                    game.ball.x + game.ball.radius > player.x &&
+                    game.ball.y > player.y &&
+                    game.ball.y < player.y + player.height
+                ) {
+                    game.ball.speedX *= -1.1;
+                    createParticles(game.ball.x, game.ball.y);
+                }
+            });
+
+            // Punteggio
+            if (game.ball.x < 0) {
+                game.players[1].score++;
+                resetBall();
+            } else if (game.ball.x > canvas.width) {
+                game.players[0].score++;
+                resetBall();
+            }
+        }
+
+        function resetBall() {
+            game.ball.x = canvas.width / 2;
+            game.ball.y = canvas.height / 2;
+            game.ball.speedX = 6 * (Math.random() > 0.5 ? 1 : -1);
+            game.ball.speedY = 6 * (Math.random() > 0.5 ? 1 : -1);
+            scoreOverlay.textContent = `${game.players[0].score} : ${game.players[1].score}`;
+        }
+
+        function movePaddles(event) {
+            const rect = canvas.getBoundingClientRect();
+            const mouseY = event.clientY - rect.top;
+
+            // Movimento del paddle sinistro con il mouse
+            game.players[0].y = mouseY - game.players[0].height / 2;
+
+            // IA per il paddle destro
+            const targetY = game.ball.y - game.players[1].height / 2;
+            game.players[1].y += (targetY - game.players[1].y) * 0.1;
+        }
+
+        function gameLoop() {
+            // Sfondo con effetto trasparenza
+            ctx.globalAlpha = 0.2;
+            ctx.fillStyle = 'black';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.globalAlpha = 1;
+
+            drawParticles();
+            moveBall();
+            drawBall();
+            drawPaddles();
+
+            requestAnimationFrame(gameLoop);
+        }
+
+        canvas.addEventListener('mousemove', movePaddles);
+        gameLoop();
+    </script>
+</body>
+</html>

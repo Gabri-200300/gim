@@ -20,3 +20,6 @@ Corso di Grafica in Movimento 2025 SUPSI
 # Esercizio 2
 - [Esercizio 2: parallasse animato](https://gabri-200300.github.io/gim/Esercizio_2/template/index_animato.html)
 - [Esercizio 2: parallasse interattivo](https://gabri-200300.github.io/gim/Esercizio_2/template/index_interattivo.html)
+- [Esercizio 3A: neve](https://gabri-200300.github.io/gim/Esercizio_3A/neve/index.html)
+- [Esercizio 3A: pioggia](https://gabri-200300.github.io/gim/Esercizio_3A/pioggia/index.html)
+- [Esercizio 3A: pong](https://gabri-200300.github.io/gim/Esercizio_3A/pong/pong.html)
