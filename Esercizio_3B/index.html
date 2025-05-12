@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+    <meta charset="UTF-8">
+    <title>Orologio Futuristico Quantico</title>
+    <style>
+        :root {
+            --primary-color: #00ffff;
+            --secondary-color: #16213e;
+            --accent-color: #0f3460;
+        }
+        body {
+            margin: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            background-color: var(--secondary-color);
+            font-family: 'Arial', sans-serif;
+            overflow: hidden;
+        }
+        #clock-container {
+            width: 400px;
+            height: 400px;
+            position: relative;
+            perspective: 1000px;
+        }
+        #clock-face {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--accent-color), var(--secondary-color));
+            box-shadow: 
+                0 0 50px rgba(0,255,255,0.3),
+                inset 0 0 30px rgba(0,255,255,0.2);
+            border: 5px solid var(--primary-color);
+            position: relative;
+            overflow: hidden;
+            transform-style: preserve-3d;
+            animation: clock-pulse 3s infinite alternate;
+        }
+        #time-display {
+            position: absolute;
+            bottom: 100px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: var(--primary-color);
+            font-size: 2.5rem;
+            font-weight: bold;
+            text-shadow: 0 0 15px var(--primary-color);
+            z-index: 10;
+        }
+        #date-display {
+            position: absolute;
+            bottom: 50px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: #4a4e69;
+            font-size: 1rem;
+            text-align: center;
+        }
+        .hand {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform-origin: bottom center;
+            background: linear-gradient(to bottom, var(--primary-color), rgba(0,255,255,0.5));
+            border-radius: 10px;
+        }
+        #hour-hand {
+            width: 8px;
+            height: 100px;
+            margin-left: -4px;
+            margin-top: -100px;
+            transform: rotate(0deg);
+        }
+        #minute-hand {
+            width: 4px;
+            height: 150px;
+            margin-left: -2px;
+            margin-top: -150px;
+            transform: rotate(0deg);
+        }
+        #second-hand {
+            width: 2px;
+            height: 180px;
+            margin-left: -1px;
+            margin-top: -180px;
+            background: linear-gradient(to bottom, #ff0055, rgba(255,0,85,0.5));
+            transform: rotate(0deg);
+        }
+        .quantum-particle {
+            position: absolute;
+            width: 5px;
+            height: 5px;
+            background-color: var(--primary-color);
+            border-radius: 50%;
+            opacity: 0.5;
+            animation: quantum-move 3s infinite alternate;
+        }
+        @keyframes quantum-move {
+            from { 
+                transform: translateX(-100px) translateY(-100px) scale(0.5); 
+                opacity: 0.3;
+            }
+            to { 
+                transform: translateX(100px) translateY(100px) scale(1.5);
+                opacity: 0.7;
+            }
+        }
+        @keyframes clock-pulse {
+            0% { transform: scale(1) rotateX(10deg); }
+            100% { transform: scale(1.02) rotateX(-10deg); }
+        }
+        .center-dot {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 20px;
+            height: 20px;
+            background: var(--primary-color);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            box-shadow: 0 0 15px var(--primary-color);
+        }
+    </style>
+</head>
+<body>
+    <div id="clock-container">
+        <div id="clock-face">
+            <div id="hour-hand" class="hand"></div>
+            <div id="minute-hand" class="hand"></div>
+            <div id="second-hand" class="hand"></div>
+            <div class="center-dot"></div>
+            <div id="time-display">00:00:00</div>
+            <div id="date-display">Caricamento...</div>
+        </div>
+    </div>
+
+    <script>
+        // Funzione per creare particelle quantistiche in background
+        function createQuantumParticles() {
+            const clockFace = document.getElementById('clock-face');
+            for (let i = 0; i < 30; i++) {
+                const particle = document.createElement('div');
+                particle.classList.add('quantum-particle');
+                particle.style.left = `${Math.random() * 100}%`;
+                particle.style.top = `${Math.random() * 100}%`;
+                clockFace.appendChild(particle);
+            }
+        }
+
+        // Funzione per aggiornare l'orologio
+        function updateClock() {
+            const now = new Date();
+            const hourHand = document.getElementById('hour-hand');
+            const minuteHand = document.getElementById('minute-hand');
+            const secondHand = document.getElementById('second-hand');
+            const timeDisplay = document.getElementById('time-display');
+            const dateDisplay = document.getElementById('date-display');
+
+            // Calcolo rotazioni
+            const hours = now.getHours() % 12;
+            const minutes = now.getMinutes();
+            const seconds = now.getSeconds();
+
+            const hourDegrees = (hours + minutes / 60) * 30;
+            const minuteDegrees = (minutes + seconds / 60) * 6;
+            const secondDegrees = seconds * 6;
+
+            hourHand.style.transform = `rotate(${hourDegrees}deg)`;
+            minuteHand.style.transform = `rotate(${minuteDegrees}deg)`;
+            secondHand.style.transform = `rotate(${secondDegrees}deg)`;
+
+            // Formattazione ore, minuti, secondi
+            const formattedHours = hours.toString().padStart(2, '0');
+            const formattedMinutes = minutes.toString().padStart(2, '0');
+            const formattedSeconds = seconds.toString().padStart(2, '0');
+
+            // Aggiornamento display temporale
+            timeDisplay.textContent = `${formattedHours}:${formattedMinutes}:${formattedSeconds}`;
+
+            // Formattazione data
+            const giorni = ['Domenica', 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato'];
+            const mesi = ['Gennaio', 'Febbraio', 'Marzo', 'Aprile', 'Maggio', 'Giugno', 'Luglio', 'Agosto', 'Settembre', 'Ottobre', 'Novembre', 'Dicembre'];
+
+            const giornoSettimana = giorni[now.getDay()];
+            const giorno = now.getDate();
+            const mese = mesi[now.getMonth()];
+            const anno = now.getFullYear();
+
+            // Aggiornamento display data
+            dateDisplay.textContent = `${giornoSettimana}, ${giorno} ${mese} ${anno}`;
+        }
+
+        // Inizializzazione
+        function init() {
+            createQuantumParticles();
+            updateClock();
+            setInterval(updateClock, 1000);
+        }
+
+        // Avvio dell'orologio
+        init();
+    </script>
+</body>
+</html>
